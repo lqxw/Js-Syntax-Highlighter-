@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Js Syntax Highlighter</title>
+</head>
+<body>
+<div id="codearea"></div>
+<script id="code">
+
+/*To use this js highligter, put the code you 
+*want to highlight inside html element with 
+*id 'code', put the div with id 'codearea' where 
+*you want to insert you highlighted code. 
+*Support IE8(and above), Firefox and Chrome.
+*/
+
+function toHtml(text) { //convert special char to html syntax
+    for(name in htmlChar) text=text.replace(htmlChar[name],name);
+    return text;
+}
+
+function handleExp(exp) { //return code in color
+	if (exp.search(keyword) === 0) return "<span style='color:"+"blue"+"'>"+exp+"</span>";
+	if (exp.search(number) === 0) return "<span style='color:"+"red"+"'>"+exp+"</span>";
+	if (exp.search(comment) === 0) return "<span style='color:"+"green;font-style:italic"+"'>"+exp+"</span>";
+	if (exp.search(string) === 0) return "<span style='color:"+"purple"+"'>"+exp+"</span>";
+}
+				
+function beginWith(text) {
+	if (text.search(allReg) === 0) {
+		var target = text.match(allReg)[0];
+		newContent = newContent + handleExp(target);
+		return target.length;
+	}
+	newContent = newContent+text.charAt(0);
+	return -1;
+}
+				
+				
+function replaceCode(content) { //main replace
+	var i = 0;
+	while( i < content.length) {
+		var sliceContent = content.slice(i);
+		var len = beginWith(sliceContent);
+		if  ( len != -1) i = i + len;
+		else i++;
+	}
+}
+
+function printcode() {
+	  var htmlContent = document.getElementById("code").innerHTML;
+	  htmlContent = toHtml(htmlContent);
+	  replaceCode(htmlContent);
+	  document.getElementById("codearea").innerHTML = newContent;
+	}
+
+var htmlChar = {"&amp;":/&/g,
+		"&lt;":/</g,
+		"&gt;":/>/g,
+		"<br/>":/\n/g,
+		"&nbsp;&nbsp;&nbsp;&nbsp;":/\t/g,
+		"&nbsp;":/\s/g
+		};
+
+
+//match keywords using regular expression
+var keyword = /\b(null|true|false|break|case|catch|continue|debugger|default|delete|do|else|finally|for|function|if|instanceof|in|new|return|switch|this|throw|try|typeof|var|void|while|with)\b/;//keyword
+var number = /[0-9]+/; //number
+var comment = /\/\*.*?\*\/|\/\/.*?<br\/>/;//comment
+var string = /".*?"/; //string
+var allReg = /\b(null|true|false|break|case|catch|continue|debugger|default|delete|do|else|finally|for|function|if|instanceof|in|new|return|switch|this|throw|try|typeof|var|void|while|with)\b|[0-9]+|\/\/.*?<br\/>|\/\*.*?\*\/|\/\*.*?\*\/|".*?"/;
+var newContent = "";
+
+window.onload = function() {
+		printcode();
+}
+
+
+</script>
+</body>
+</html>
